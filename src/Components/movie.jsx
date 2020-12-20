@@ -1,14 +1,20 @@
 import React, { Component, useEffect, useState } from "react";
 import { getMovies } from "../services/fakeMovieService";
-import Like from "./common/like";
 import Pagination from "./common/pagination";
 import paginate from "../utilis/paginate";
+import { getGenres } from "../services/fakeGenreService";
+import ListGroup from "./common/listgroup";
+import MovieTable from "./MovieTable";
+import _ from "lodash";
 
 export function Movie() {
   const [state, setState] = useState(() => ({
     movieData: getMovies(),
+    genres: [{ _id: "", name: "All Genres" }, ...getGenres()],
     currentPage: 1,
+    selectedItem: { _id: "", name: "All Genres" },
     pageSize: 4,
+    sortColumn: { path: "title", order: "asc" },
   }));
 
   //   const n = localStorage.getItem("state");
@@ -25,7 +31,7 @@ export function Movie() {
     setState({ ...state, movieData: movie });
   };
 
-  const handleClick = function (movies) {
+  const handleLikeClick = function (movies) {
     setState({
       ...state,
       movieData: state.movieData.map((m) => {
@@ -39,54 +45,63 @@ export function Movie() {
     setState({ ...state, currentPage: pageNumber });
   };
 
-  const count = state.movieData.length;
+  const handleItemSelect = (genre) => {
+    setState({ ...state, currentPage: 1, selectedItem: genre });
+  };
 
-  if (count === 0) return <p>There is no movies in the database</p>;
+  const handleSort = (sortColumn) => {
+    setState({ ...state, sortColumn });
+  };
 
-  const movie = paginate(state.movieData, state.currentPage, state.pageSize);
+  const getPagedData = () => {
+    const filtered = state.selectedItem._id
+      ? state.movieData.filter(
+          (movie) => movie.genre._id === state.selectedItem._id
+        )
+      : state.movieData;
+
+    const sortedItems = _.orderBy(
+      filtered,
+      [state.sortColumn.path],
+      [state.sortColumn.order]
+    );
+
+    const movie = paginate(sortedItems, state.currentPage, state.pageSize);
+
+    return { totalCount: filtered.length, data: movie };
+  };
+
+  if (state.movieData.length === 0)
+    return <p>There is no movies in the database</p>;
+
+  const { totalCount, data: movie } = getPagedData();
 
   //Zen coding:- table.table>thead>tr>th*4
   return (
-    <React.Fragment>
-      <p>Showing {count} movies in the database</p>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Genre</th>
-            <th>Stock</th>
-            <th>Rate</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {movie.map((movie) => (
-            <tr key={movie._id}>
-              <td>{movie.title}</td>
-              <td>{movie.genre.name}</td>
-              <td>{movie.numberInStock}</td>
-              <td>{movie.dailyRentalRate}</td>
-              <td>
-                <Like like={movie.like} onClick={() => handleClick(movie)} />
-              </td>
-              <td>
-                <button
-                  onClick={() => handleDelete(movie)}
-                  className="btn btn-danger btn-sm"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Pagination
-        totalCount={count}
-        pageSize={state.pageSize}
-        currentPage={state.currentPage}
-        onPageClick={handlePageClick}
-      />
-    </React.Fragment>
+    <div className="row">
+      <div className="col-3">
+        <ListGroup
+          genres={state.genres}
+          selectedItem={state.selectedItem}
+          onItemSelect={handleItemSelect}
+        />
+      </div>
+      <div className="col">
+        <p>Showing {totalCount} movies in the database</p>
+        <MovieTable
+          movie={movie}
+          sortColumn={state.sortColumn}
+          onSortItem={handleSort}
+          onLike={handleLikeClick}
+          onDelete={handleDelete}
+        />
+        <Pagination
+          totalCount={totalCount}
+          pageSize={state.pageSize}
+          currentPage={state.currentPage}
+          onPageClick={handlePageClick}
+        />
+      </div>
+    </div>
   );
 }

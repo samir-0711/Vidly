@@ -7,19 +7,20 @@ const Pagination = ({ totalCount, currentPage, pageSize, onPageClick }) => {
   if (totalPage === 1) return null;
   const pageNumbers = _.range(1, totalPage + 1);
 
-  console.log(currentPage);
-
   return (
     <nav aria-label="Page navigation example">
       <ul className="pagination">
         {pageNumbers.map((number) => (
-          <li className="page-item">
+          <li
+            key={number}
+            className={
+              number === currentPage ? "page-item active" : "page-item"
+            }
+          >
             <a
               onClick={() => onPageClick(number)}
               style={{ cursor: "pointer" }}
-              className={
-                number === currentPage ? "page-link active" : "page-link"
-              }
+              className="page-link"
             >
               {number}
             </a>
