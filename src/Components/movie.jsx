@@ -7,7 +7,7 @@ import ListGroup from "./common/listgroup";
 import MovieTable from "./MovieTable";
 import _ from "lodash";
 
-export function Movie() {
+export default function Movie() {
   const [state, setState] = useState(() => ({
     movieData: getMovies(),
     genres: [{ _id: "", name: "All Genres" }, ...getGenres()],

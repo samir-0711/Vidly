@@ -3,7 +3,7 @@ import _ from "lodash";
 
 const TableBody = ({ data, column }) => {
   const columnRender = (items, column) => {
-    if (column.content) return column.content;
+    if (column.content) return column.content(items);
     return _.get(items, column.path);
   };
 
