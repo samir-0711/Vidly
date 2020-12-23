@@ -1,5 +1,5 @@
 import React from "react";
-import TableBody from "./TableBody";
+import TableBody from "./tableBody";
 import TableHeader from "./tableheader";
 
 const Table = ({ data, column, sortColumn, onSortItem }) => {
