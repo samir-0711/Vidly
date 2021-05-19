@@ -50,12 +50,13 @@ const LoginForm = () => {
 
     const data = { ...state.data };
     data[currentTarget.name] = currentTarget.value;
+    console.log(currentTarget), data;
     setState({ ...state, data, error });
   };
 
   const doSubmit = () => {
     //call the server, save changes and redirect
-    console.log("Submitted");
+    console.log("Submitted", state.data);
   };
 
   return (

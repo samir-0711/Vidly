@@ -4,7 +4,7 @@ import Pagination from "./common/pagination";
 import paginate from "../utilis/paginate";
 import { getGenres } from "../services/fakeGenreService";
 import ListGroup from "./common/listgroup";
-import MovieTable from "./movieTable";
+import MovieTable from "./MovieTable";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import SearchBox from "./searchBox";
